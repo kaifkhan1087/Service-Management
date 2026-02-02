@@ -3,106 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Odyssey Technologies - Service Portal</title>
+    <title>Odyssey Tech - Pro Service Portal</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --odyssey-blue: #004a99; --odyssey-dark: #1a1a1a; --accent: #ff6700; }
-        body { background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        :root { --odyssey-blue: #004a99; --odyssey-dark: #121212; --accent: #ff6700; }
+        body { background-color: #f0f4f7; font-family: 'Segoe UI', system-ui, sans-serif; }
         
-        /* Mobile Optimized Login */
-        .login-container { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--odyssey-blue); padding: 20px; }
-        .login-card { width: 100%; max-width: 400px; border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        /* Persistent Login Screens */
+        #loginPage { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--odyssey-blue); padding: 20px; }
+        #mainApp { display: none; }
 
-        /* Professional Header */
-        .navbar-custom { background: var(--odyssey-dark); color: white; padding: 15px; border-bottom: 4px solid var(--accent); }
-        .company-name { font-weight: 800; letter-spacing: 1px; color: white; text-transform: uppercase; }
+        .navbar-custom { background: var(--odyssey-dark); color: white; padding: 12px 15px; border-bottom: 3px solid var(--accent); position: sticky; top: 0; z-index: 1000; }
+        .company-logo { font-weight: 900; letter-spacing: 1px; font-size: 1.2rem; }
 
-        /* Stats Cards */
-        .stat-card { border: none; border-radius: 12px; color: white; padding: 15px; margin-bottom: 10px; }
-        
-        /* Mobile Input Styling */
-        .form-control, .form-select { border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; font-size: 16px; }
-        .btn-action { border-radius: 10px; padding: 12px; font-weight: bold; width: 100%; border: none; transition: 0.3s; }
+        /* Stats Section */
+        .stat-card { border: none; border-radius: 15px; color: white; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .bg-coll { background: linear-gradient(45deg, #28a745, #85d89b); }
+        .bg-exp { background: linear-gradient(45deg, #dc3545, #f08080); }
+        .bg-net { background: linear-gradient(45deg, #212529, #495057); }
+
+        /* Form Styling */
+        .section-box { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eef; }
+        .form-control { border-radius: 12px; padding: 12px; border: 1px solid #dee2e6; margin-bottom: 12px; font-size: 16px; }
+        .btn-main { border-radius: 12px; padding: 14px; font-weight: 700; width: 100%; border: none; transition: 0.2s active; }
         .btn-save { background: var(--odyssey-blue); color: white; }
-        .btn-exp { background: #dc3545; color: white; }
+        .btn-exp { background: #f8d7da; color: #721c24; border: 1px dashed #f5c6cb; }
 
-        /* Developer Credit */
-        .footer-credit { text-align: center; padding: 25px; font-size: 0.85rem; color: #555; background: #e9ecef; margin-top: 30px; border-radius: 25px 25px 0 0; }
-        .dev-name { color: var(--odyssey-blue); font-weight: bold; text-decoration: none; border-bottom: 2px solid var(--accent); }
-
-        .table-container { background: white; border-radius: 15px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .footer-credit { text-align: center; padding: 30px; background: #fff; margin-top: 40px; border-top: 1px solid #eee; font-size: 0.9rem; }
+        .dev-tag { color: var(--odyssey-blue); font-weight: bold; text-decoration: none; }
     </style>
 </head>
 <body>
 
-<div id="loginPage" class="login-container">
-    <div class="card login-card p-4 text-center">
-        <h2 class="company-name" style="color: var(--odyssey-blue);">Odyssey Technologies</h2>
-        <p class="text-muted mb-4">Service Management System</p>
-        <input type="password" id="passInput" class="form-control text-center" placeholder="Access Password">
-        <button onclick="handleLogin()" class="btn btn-action btn-save mt-2">Login to Portal</button>
+<div id="loginPage">
+    <div class="card p-4 shadow-lg border-0" style="width: 100%; max-width: 380px; border-radius: 25px;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color: var(--odyssey-blue);">ODYSSEY</h2>
+            <p class="text-muted small">Service Management v2.0</p>
+        </div>
+        <input type="password" id="passInput" class="form-control text-center mb-3" placeholder="Access Password">
+        <button onclick="handleLogin()" class="btn btn-main btn-save shadow">Unlock Portal</button>
     </div>
 </div>
 
-<div id="mainApp" style="display: none;">
-    <nav class="navbar-custom d-flex justify-content-between align-items-center shadow">
-        <div class="company-name">ODYSSEY TECHNOLOGY</div>
-        <button onclick="location.reload()" class="btn btn-outline-light btn-sm">Logout</button>
+<div id="mainApp">
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+        <div class="company-logo">ODYSSEY TECH</div>
+        <button onclick="logout()" class="btn btn-sm btn-outline-danger" style="border-radius: 8px;">Logout</button>
     </nav>
 
-    <div class="container mt-3">
+    <div class="container-fluid mt-3">
         <div id="adminDashboard" class="row g-2 mb-3" style="display: none;">
             <div class="col-6 col-md-3"><div class="stat-card bg-primary"><h6>Calls</h6><h3 id="statCalls">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card bg-success"><h6>Collection</h6><h3 id="statColl">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card bg-danger"><h6>Expenses</h6><h3 id="statExp">0</h3></div></div>
-            <div class="col-6 col-md-3"><div class="stat-card bg-dark"><h6>Net Profit</h6><h3 id="statProfit">0</h3></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card bg-coll"><h6>Cash</h6><h3 id="statColl">0</h3></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card bg-exp"><h6>Exp.</h6><h3 id="statExp">0</h3></div></div>
+            <div class="col-6 col-md-3"><div class="stat-card bg-net"><h6>Net</h6><h3 id="statProfit">0</h3></div></div>
         </div>
 
         <div class="row">
             <div class="col-lg-4">
-                <div class="card p-3 mb-3 shadow-sm border-0" style="border-radius: 15px;">
-                    <h6 class="fw-bold mb-3">Service Entry (<span id="activeEng" class="text-primary"></span>)</h6>
+                <div class="section-box">
+                    <h5 class="fw-bold mb-3">Service Entry: <span id="activeEng" class="text-primary"></span></h5>
                     <input type="text" id="job_id" class="form-control" placeholder="Job Sheet No.">
                     <input type="text" id="issue" class="form-control" placeholder="Problem/Issue">
                     <textarea id="solution" class="form-control" rows="2" placeholder="Action Taken"></textarea>
                     <div class="row g-2">
                         <div class="col-7"><input type="number" id="call_amt" class="form-control" placeholder="Amount ₹"></div>
                         <div class="col-5">
-                            <select id="pay_mode" class="form-select">
+                            <select id="pay_mode" class="form-select form-control">
                                 <option value="Cash">Cash</option>
                                 <option value="UPI">UPI</option>
                             </select>
                         </div>
                     </div>
-                    <button onclick="submitEntry()" class="btn btn-action btn-save shadow-sm">Save Service Call</button>
+                    <button onclick="submitEntry()" class="btn btn-main btn-save mb-4 shadow-sm">Submit Call</button>
                     
-                    <div class="mt-4 pt-3 border-top">
-                        <h6 class="text-danger fw-bold mb-2">Engineer Expense (Petrol/Other)</h6>
+                    <div class="pt-3 border-top">
+                        <h6 class="text-danger fw-bold small">Report Company Expense</h6>
                         <div class="row g-2">
                             <div class="col-7"><input type="text" id="exp_reason" class="form-control" placeholder="Reason"></div>
-                            <div class="col-5"><input type="number" id="exp_amt" class="form-control" placeholder="Amount"></div>
+                            <div class="col-5"><input type="number" id="exp_amt" class="form-control" placeholder="₹"></div>
                         </div>
-                        <button onclick="submitExpense()" class="btn btn-action btn-exp shadow-sm">Submit Expense</button>
+                        <button onclick="submitExpense()" class="btn btn-main btn-exp">Add Expense</button>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-8">
-                <div class="table-container">
-                    <div class="d-flex justify-content-between mb-2">
-                        <h6 class="fw-bold">Today's Live Logs</h6>
+                <div class="section-box">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">Live Service Log</h6>
                         <span class="badge bg-dark" id="currentDate"></span>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover align-middle">
+                        <table class="table table-hover align-middle" style="font-size: 0.9rem;">
                             <thead class="table-light">
-                                <tr><th>Eng/Job</th><th>Problem</th><th>Amount</th><th id="adminDelHead">Action</th></tr>
+                                <tr><th>Engineer</th><th>Detail</th><th>Amount</th><th>-</th></tr>
                             </thead>
-                            <tbody id="tableBody" class="small"></tbody>
+                            <tbody id="tableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -111,8 +113,8 @@
     </div>
 
     <div class="footer-credit">
-        &copy; 2024 Odyssey Technologies | All Rights Reserved<br>
-        Developed by <a href="#" class="dev-name">Kaif Khan</a>
+        &copy; 2024 Odyssey Technologies | Systems Secure<br>
+        Developed by <a href="#" class="dev-tag">Kaif Khan</a>
     </div>
 </div>
 
@@ -131,11 +133,7 @@
     const db = firebase.database();
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('currentDate').innerText = today;
-    
-    let activeUser = "";
-    let userRole = "";
 
-    // AAPKI ENGINEER DETAILS
     const users = {
         "Nausin123": { name: "Nausin Mansuri", role: "Engineer" },
         "vikram123": { name: "Vikram", role: "Engineer" },
@@ -143,41 +141,52 @@
         "admin786": { name: "Admin (Owner)", role: "Admin" }
     };
 
-    function handleLogin() {
-        const pass = document.getElementById('passInput').value;
-        if(users[pass]) {
-            activeUser = users[pass].name;
-            userRole = users[pass].role;
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('activeEng').innerText = activeUser;
-            if(userRole === 'Admin') {
-                document.getElementById('adminDashboard').style.display = 'flex';
-            } else {
-                document.getElementById('adminDelHead').style.display = 'none';
-            }
-            syncData();
-        } else {
-            alert("Sahi password dalein!");
+    // --- SESSION CHECK ON LOAD ---
+    window.onload = function() {
+        const savedUser = localStorage.getItem('odyssey_user');
+        if(savedUser) {
+            const userData = JSON.parse(savedUser);
+            showPortal(userData.name, userData.role);
         }
     }
 
+    function handleLogin() {
+        const pass = document.getElementById('passInput').value;
+        if(users[pass]) {
+            const userData = users[pass];
+            localStorage.setItem('odyssey_user', JSON.stringify(userData)); // Save Session
+            showPortal(userData.name, userData.role);
+        } else {
+            alert("Wrong Password!");
+        }
+    }
+
+    function showPortal(name, role) {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('activeEng').innerText = name;
+        if(role === 'Admin') document.getElementById('adminDashboard').style.display = 'flex';
+        syncData(role);
+    }
+
+    function logout() {
+        localStorage.removeItem('odyssey_user');
+        location.reload();
+    }
+
+    // --- DATA FUNCTIONS ---
     function submitEntry() {
         const id = document.getElementById('job_id').value;
         const amt = parseFloat(document.getElementById('call_amt').value) || 0;
+        const user = JSON.parse(localStorage.getItem('odyssey_user')).name;
         if(!id || !amt) return alert("Details missing!");
 
         db.ref('reports/' + today + '/data').push({
-            type: 'call',
-            engineer: activeUser,
-            job_id: id,
+            type: 'call', engineer: user, job_id: id,
             iss: document.getElementById('issue').value,
-            sol: document.getElementById('solution').value,
-            amt: amt,
-            mode: document.getElementById('pay_mode').value,
+            amt: amt, mode: document.getElementById('pay_mode').value,
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         });
-        
         alert("Call Saved!");
         ['job_id','issue','solution','call_amt'].forEach(i => document.getElementById(i).value = '');
     }
@@ -185,21 +194,19 @@
     function submitExpense() {
         const r = document.getElementById('exp_reason').value;
         const a = parseFloat(document.getElementById('exp_amt').value) || 0;
-        if(!r || !a) return alert("Expense bhariye!");
+        const user = JSON.parse(localStorage.getItem('odyssey_user')).name;
+        if(!r || !a) return alert("Fill expense!");
 
         db.ref('reports/' + today + '/data').push({
-            type: 'expense',
-            engineer: activeUser,
-            reason: r,
-            amt: a,
+            type: 'expense', engineer: user, reason: r, amt: a,
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         });
-        alert("Expense Saved!");
+        alert("Expense Added!");
         document.getElementById('exp_reason').value = '';
         document.getElementById('exp_amt').value = '';
     }
 
-    function syncData() {
+    function syncData(role) {
         db.ref('reports/' + today + '/data').on('value', (snap) => {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = "";
@@ -207,23 +214,15 @@
 
             snap.forEach((child) => {
                 const d = child.val();
-                if(d.type === 'call') {
-                    tC += d.amt; count++;
-                    tbody.innerHTML += `<tr>
-                        <td><b>${d.engineer}</b><br><small>${d.job_id}</small></td>
-                        <td>${d.iss}</td>
-                        <td class="text-success fw-bold">₹${d.amt}</td>
-                        <td>${userRole === 'Admin' ? `<button onclick="delItem('${child.key}')" class="btn btn-sm text-danger">×</button>` : '-'}</td>
-                    </tr>`;
-                } else {
-                    tE += d.amt;
-                    tbody.innerHTML += `<tr class="table-danger">
-                        <td><b>${d.engineer}</b><br>EXPENSE</td>
-                        <td>${d.reason}</td>
-                        <td class="text-danger fw-bold">-₹${d.amt}</td>
-                        <td>${userRole === 'Admin' ? `<button onclick="delItem('${child.key}')" class="btn btn-sm text-danger">×</button>` : '-'}</td>
-                    </tr>`;
-                }
+                const isCall = d.type === 'call';
+                if(isCall) { tC += d.amt; count++; } else { tE += d.amt; }
+
+                tbody.innerHTML += `<tr class="${isCall ? '' : 'table-danger'}">
+                    <td><b>${d.engineer}</b><br><small>${d.time}</small></td>
+                    <td>${isCall ? d.job_id + '<br>' + d.iss : d.reason}</td>
+                    <td class="${isCall ? 'text-success' : 'text-danger'} fw-bold">${isCall ? '₹'+d.amt : '-₹'+d.amt}</td>
+                    <td>${role === 'Admin' ? `<button onclick="delItem('${child.key}')" class="btn btn-sm text-danger">×</button>` : ''}</td>
+                </tr>`;
             });
             document.getElementById('statCalls').innerText = count;
             document.getElementById('statColl').innerText = "₹" + tC;
@@ -233,10 +232,8 @@
     }
 
     function delItem(key) {
-        if(confirm("Entry delete karni hai?")) db.ref('reports/' + today + '/data/' + key).remove();
+        if(confirm("Delete this?")) db.ref('reports/' + today + '/data/' + key).remove();
     }
 </script>
 </body>
 </html>
-
-
