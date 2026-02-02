@@ -3,44 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xiaomi Cloud Service Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Xiaomi Pro Service Portal</title>
     
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
+        :root { --primary: #ff6700; --dark: #333; }
         body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #ff6700; }
-        .app-content { display: none; }
-        .main-card { max-width: 500px; margin: 20px auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: none; }
-        .brand-header { background: #ff6700; color: white; padding: 15px; text-align: center; border-radius: 15px 15px 0 0; }
-        .section-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #dee2e6; }
-        .btn-xiaomi { background: #ff6700; color: white; width: 100%; font-weight: bold; border: none; padding: 12px; }
+        .login-box { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--primary); }
+        .main-card { max-width: 500px; margin: 20px auto; border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+        .brand-header { background: var(--primary); color: white; padding: 20px; border-radius: 15px 15px 0 0; text-align: center; }
+        .section-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #eee; }
+        .btn-xiaomi { background: var(--primary); color: white; font-weight: bold; width: 100%; border: none; padding: 12px; }
+        .badge-role { font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 20px; }
     </style>
 </head>
 <body>
 
-<div id="loginScreen" class="login-screen">
-    <div class="card p-4 shadow" style="width: 320px;">
-        <h4 class="text-center mb-4">Xiaomi Login</h4>
-        <input type="password" id="passInput" class="form-control mb-3" placeholder="Enter Password">
-        <button onclick="checkLogin()" class="btn btn-warning w-100">Unlock Portal</button>
+<div id="loginPage" class="login-box">
+    <div class="card p-4 shadow-lg" style="width: 350px; border-radius: 15px;">
+        <div class="text-center mb-4">
+            <h3 style="color: var(--primary);">Xiaomi Login</h3>
+            <small class="text-muted">Enter Password to Access</small>
+        </div>
+        <input type="password" id="passInput" class="form-control mb-3 text-center" placeholder="••••••••">
+        <button onclick="handleLogin()" class="btn btn-dark w-100 py-2">Unlock Portal</button>
+        <p class="text-center mt-3 mb-0" style="font-size: 10px; color: #aaa;">Secure Cloud Connection Active</p>
     </div>
 </div>
 
-<div id="appContent" class="app-content container">
-    <div class="card main-card">
+<div id="mainApp" class="container">
+    <div class="card main-card" id="appCard" style="display: block;">
         <div class="brand-header">
-            <h4 id="portalTitle">Xiaomi Service Portal</h4>
-            <div id="userRole" class="badge bg-light text-dark"></div>
+            <h3>Xiaomi Service Tool</h3>
+            <span id="displayRole" class="badge-role">Engineer Mode</span>
         </div>
 
         <div class="card-body">
-            <div id="engForm" class="section-box shadow-sm">
+            <div id="engineerSection" class="section-box">
+                <h6 class="fw-bold mb-3 border-bottom pb-2">New Call Entry</h6>
                 <input type="text" id="job_id" class="form-control mb-2" placeholder="Job Sheet No.">
-                <input type="text" id="issue" class="form-control mb-2" placeholder="Issue">
-                <textarea id="solution" class="form-control mb-2" placeholder="Solution Given"></textarea>
+                <input type="text" id="issue" class="form-control mb-2" placeholder="Issue (e.g. Panel/Power)">
+                <textarea id="solution" class="form-control mb-2" rows="2" placeholder="Action Taken"></textarea>
                 <div class="row g-2 mb-3">
                     <div class="col-7"><input type="number" id="call_amt" class="form-control" placeholder="Amount (₹)"></div>
                     <div class="col-5">
@@ -50,27 +56,41 @@
                         </select>
                     </div>
                 </div>
-                <button onclick="saveToCloud()" class="btn btn-xiaomi">Submit to Cloud</button>
+                <button onclick="submitToCloud()" class="btn btn-xiaomi shadow-sm">Submit to Server</button>
+            </div>
+
+            <div class="section-box shadow-sm" style="background: #fff9f9;">
+                <h6 class="text-danger fw-bold border-bottom pb-2">Daily Expense (Petrol/Other)</h6>
+                <div class="row g-2">
+                    <div class="col-7"><input type="text" id="exp_reason" class="form-control" placeholder="Reason"></div>
+                    <div class="col-5"><input type="number" id="exp_amt" class="form-control" placeholder="Amount"></div>
+                </div>
+                <button onclick="addExpenseToCloud()" class="btn btn-danger btn-sm w-100 mt-2">Save Expense</button>
             </div>
 
             <div id="adminView" class="section-box shadow-sm mt-3">
-                <h6 class="text-primary fw-bold border-bottom pb-2">Live Cloud Records</h6>
+                <h6 class="text-primary fw-bold border-bottom pb-2">Live Cloud Database (Today)</h6>
                 <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead><tr><th>Job ID</th><th>Amt</th><th>Mode</th></tr></thead>
-                        <tbody id="liveTableBody"></tbody>
+                    <table class="table table-sm" id="liveTable">
+                        <thead class="table-light"><tr><th>Job/Exp</th><th>Amt</th><th>Del</th></tr></thead>
+                        <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-                <div class="p-2 bg-light text-center fw-bold rounded">
-                    Today's Total: <span id="total_cash" class="text-success">₹0</span>
+                <div class="d-flex justify-content-between fw-bold p-3 bg-light rounded">
+                    <span>Net Cash in Hand:</span>
+                    <span id="net_cash" class="text-success fs-5">₹0</span>
                 </div>
             </div>
+
+            <button onclick="generateWhatsAppReport()" class="btn btn-success w-100 py-3 mt-3 shadow-sm fw-bold">
+                📱 SEND FULL SUMMARY TO GROUP
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. YOUR FIREBASE CONFIG
+    // 1. FIREBASE CONFIG (Aapki Details)
     const firebaseConfig = {
         apiKey: "AIzaSyBQ893qaUY52PE2-gQGDPV87RI4h5pssqk",
         authDomain: "xiaomi-service-8f70a.firebaseapp.com",
@@ -82,63 +102,94 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
     const today = new Date().toISOString().split('T')[0];
 
-    // 2. LOGIN LOGIC
-    function checkLogin() {
+    // 2. LOGIN SYSTEM
+    function handleLogin() {
         const pass = document.getElementById('passInput').value;
-        if(pass === 'xiaomi123') {
-            showPortal('Engineer');
-        } else if(pass === 'admin786') {
-            showPortal('Admin');
-        } else {
-            alert("Wrong Password!");
-        }
+        if(pass === 'xiaomi123') { setupPortal('Engineer'); }
+        else if(pass === 'admin786') { setupPortal('Admin'); }
+        else { alert("Galat Password!"); }
     }
 
-    function showPortal(role) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appContent').style.display = 'block';
-        document.getElementById('userRole').innerText = "Logged in as: " + role;
+    function setupPortal(role) {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('displayRole').innerText = role + " Mode";
         
-        if(role === 'Engineer') {
-            document.getElementById('adminView').style.display = 'none';
-        }
+        // Admin hi table dekh sakta hai
+        if(role === 'Engineer') { document.getElementById('adminView').style.display = 'none'; }
+        loadRealtimeData();
     }
 
-    // 3. SAVE DATA
-    function saveToCloud() {
+    // 3. SAVE DATA TO CLOUD
+    function submitToCloud() {
         const id = document.getElementById('job_id').value;
         const amt = parseFloat(document.getElementById('call_amt').value) || 0;
+        if(!id || !amt) return alert("Pehle data bhariye!");
 
-        if(!id || !amt) return alert("Details bhariye!");
-
-        database.ref('reports/' + today + '/calls').push({
-            job_id: id,
-            issue: document.getElementById('issue').value,
-            solution: document.getElementById('solution').value,
-            amount: amt,
-            mode: document.getElementById('pay_mode').value
+        db.ref('reports/' + today + '/calls').push({
+            id, iss: document.getElementById('issue').value,
+            sol: document.getElementById('solution').value,
+            amt, mode: document.getElementById('pay_mode').value
         });
-
-        alert("Data Cloud par save ho gaya!");
-        ['job_id','issue','solution','call_amt'].forEach(f => document.getElementById(f).value = '');
+        alert("Cloud par save ho gaya!");
+        ['job_id','issue','solution','call_amt'].forEach(i => document.getElementById(i).value = '');
     }
 
-    // 4. LOAD DATA (REALTIME)
-    database.ref('reports/' + today + '/calls').on('value', (snap) => {
-        const tbody = document.getElementById('liveTableBody');
-        tbody.innerHTML = "";
-        let total = 0;
-        snap.forEach((child) => {
-            const d = child.val();
-            total += d.amount;
-            tbody.innerHTML += `<tr><td>${d.job_id}</td><td>₹${d.amount}</td><td>${d.mode}</td></tr>`;
-        });
-        document.getElementById('total_cash').innerText = "₹" + total;
-    });
-</script>
+    function addExpenseToCloud() {
+        const reason = document.getElementById('exp_reason').value;
+        const amt = parseFloat(document.getElementById('exp_amt').value) || 0;
+        if(!reason || !amt) return alert("Kharcha detail bhariye");
 
+        db.ref('reports/' + today + '/expenses').push({ reason, amt });
+        document.getElementById('exp_reason').value = '';
+        document.getElementById('exp_amt').value = '';
+    }
+
+    // 4. REALTIME SYNC (Refresh-Proof)
+    function loadRealtimeData() {
+        db.ref('reports/' + today).on('value', (snap) => {
+            const data = snap.val();
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            let tC = 0, tE = 0;
+
+            if(data?.calls) {
+                Object.keys(data.calls).forEach(key => {
+                    const c = data.calls[key]; tC += c.amt;
+                    tbody.innerHTML += `<tr><td>${c.id}</td><td>₹${c.amt}</td><td><button onclick="delItem('calls','${key}')" class="btn btn-sm text-danger">×</button></td></tr>`;
+                });
+            }
+            if(data?.expenses) {
+                Object.keys(data.expenses).forEach(key => {
+                    const e = data.expenses[key]; tE += e.amt;
+                    tbody.innerHTML += `<tr class="table-danger"><td>${e.reason}</td><td>-₹${e.amt}</td><td><button onclick="delItem('expenses','${key}')" class="btn btn-sm text-danger">×</button></td></tr>`;
+                });
+            }
+            document.getElementById('net_cash').innerText = "₹" + (tC - tE);
+        });
+    }
+
+    function delItem(type, key) {
+        if(confirm("Delete karna hai?")) db.ref('reports/' + today + '/' + type + '/' + key).remove();
+    }
+
+    // 5. FINAL WHATSAPP REPORT
+    function generateWhatsAppReport() {
+        db.ref('reports/' + today).once('value', (snap) => {
+            const d = snap.val();
+            if(!d) return alert("Data nahi hai!");
+            let msg = `*📊 XIAOMI EOD REPORT - ${today}*%0A%0A*CALLS:*%0A`;
+            let cTotal = 0, eTotal = 0;
+            if(d.calls) Object.values(d.calls).forEach(c => { cTotal += c.amt; msg += `• ${c.id}: ₹${c.amt} (${c.mode})%0A`; });
+            msg += `%0A*EXPENSES:*%0A`;
+            if(d.expenses) Object.values(d.expenses).forEach(e => { eTotal += e.amt; msg += `• ${e.reason}: ₹${e.amt}%0A`; });
+            msg += `%0A--------------------------%0A*NET CASH: ₹${cTotal - eTotal}*%0A--------------------------`;
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        });
+    }
+</script>
 </body>
 </html>
